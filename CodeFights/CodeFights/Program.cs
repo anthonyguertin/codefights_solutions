@@ -38,12 +38,12 @@ public partial class Program
             return;
         }
         var console_args = console_linefeed.Split(_space);
-        var solutionClassName = console_args[0];
+        var arg1 = console_args[0];
 
-        // Check if Viable Option 
-        if (console_args.Length <= 0 || !solutionList.Contains(console_args[0]))
-            Console.WriteLine(_notOptionMessage);
-
+        /*        // Check if Viable Option 
+                if (console_args.Length <= 0 || !solutionList.Contains(console_args[0]))
+                    Console.WriteLine(_notOptionMessage);
+        */
         // Display Custom Test Dialogue
         Console.WriteLine(_customOrStandardTestMessage);
 
@@ -54,26 +54,45 @@ public partial class Program
             // Place custom tests here; point to a file;
         }
 
+        // Get the nameSpaceList from the option menu index
+
         var solutionToRun = string.Empty;
-        foreach (var n in nameSpaceList)
+        int result;
+        if (!int.TryParse(arg1, out result))
         {
-            var i = n.LastIndexOf(".");
-            if (i + 1 > n.Length) continue;
-
-            i += 1;
-            var s = n[i..];
-
-
-            if (s != solutionClassName)
-            {
-                Console.WriteLine("Error, solution not in program namespace");
-                continue;
-            }
-
-
-            solutionToRun = n;
-            break;
+            Console.WriteLine(_notOptionMessage);
+            return;
         }
+
+        if (nameSpaceList.Count < result || result < 0)
+        {
+            Console.WriteLine(_notOptionMessage);
+
+        }
+        else
+        {
+            solutionToRun = nameSpaceList[result];
+        }
+
+        /*        foreach (var n in nameSpaceList)
+                {
+                    var i = n.LastIndexOf(".");
+                    if (i + 1 > n.Length) continue;
+
+                    i += 1;
+                    var s = n[i..];
+
+
+                    if (s != arg1)
+                    {
+                        Console.WriteLine("Error, solution not in program namespace");
+                        continue;
+                    }
+
+
+                    solutionToRun = n;
+                    break;
+                }*/
 
         var type = Type.GetType(solutionToRun);// ");//solutionClassName);
         var method = type.GetMethod("solution");
@@ -82,7 +101,7 @@ public partial class Program
         var add = new Add();
         var addTests = new AddTests();
 
-
-        add.solution(addTests.Param1, addTests.Param2);
+        method.Invoke(add,  new object[] { addTests.Param1, addTests.Param2 });
+        //Console.WriteLine( $"result: {add.solution(addTests.Param1, addTests.Param2)}");
     }
 }
